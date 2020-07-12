@@ -75,6 +75,6 @@ public class DialogDefineCharactersTape extends DialogBox
                 return false;
             }
         }
-        return  true;
+        return true;
     }
 }

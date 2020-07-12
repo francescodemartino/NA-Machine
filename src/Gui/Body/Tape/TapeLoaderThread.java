@@ -7,7 +7,6 @@ public class TapeLoaderThread extends SwingWorker<Void, TapeViewer>
 {
     private boolean notJumpWait = true;
     private TapeLoaderThreadListener tapeLoaderThreadListener;
-    private boolean normalExecution = true;
 
     @Override
     protected Void doInBackground()

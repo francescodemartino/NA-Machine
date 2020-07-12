@@ -10,6 +10,8 @@ import mdnd.Instruction.Instruction;
 import mdnd.Instruction.InstructionManager;
 import Gui.Body.Tape.TapeViewer;
 
+import javax.swing.*;
+
 public class Tape
 {
     public static final char FIRST_CHAR = '#';
@@ -87,7 +89,8 @@ public class Tape
         {
             tapeViewer = new TapeViewer(instructionManager, characters, executionMdtND, currentPosition, currentState, state);
         }
-        TapeOperation.fifoTapeOperation.offer(new TapeOperation(tapeViewer, currentPosition, currentState, state));
+        refreshTapeView(tapeViewer, currentPosition, currentState, state);
+        //TapeOperation.fifoTapeOperation.offer(new TapeOperation(tapeViewer, currentPosition, currentState, state));
     }
 
     public void addExecutionMdtND(ExecutionMdtND executionMdtND)
@@ -108,7 +111,8 @@ public class Tape
         if(!instructionOptional.isPresent())
         {
             setState(STATE_NOT_NEXT_STATE);
-            TapeOperation.fifoTapeOperation.offer(new TapeOperation(tapeViewer, currentPosition, currentState, STATE_NOT_NEXT_STATE));
+            //TapeOperation.fifoTapeOperation.offer(new TapeOperation(tapeViewer, currentPosition, currentState, STATE_NOT_NEXT_STATE));
+            refreshTapeView(tapeViewer, currentPosition, currentState, STATE_NOT_NEXT_STATE);
             return new ResponseTape(ResponseTape.ACTION_REMOVE, null);
         }
         Instruction instruction = instructionOptional.get();
@@ -117,7 +121,8 @@ public class Tape
         {
             if(exeInstruction(instruction.getCharacter().get(0), instruction.getDirections().get(0), instruction.getState().get(0)))
             {
-                TapeOperation.fifoTapeOperation.offer(new TapeOperation(tapeViewer, currentPosition, currentState, STATE_IN_EXE));
+                //TapeOperation.fifoTapeOperation.offer(new TapeOperation(tapeViewer, currentPosition, currentState, STATE_IN_EXE));
+                refreshTapeView(tapeViewer, currentPosition, currentState, STATE_IN_EXE);
                 return new ResponseTape(ResponseTape.ACTION_NOTHING, null);
             }
             else
@@ -133,12 +138,14 @@ public class Tape
                 Tape tape = cloneTape();
                 tape.setPrevious(this);
                 tape.exeInstruction(instruction.getCharacter().get(i), instruction.getDirections().get(i), instruction.getState().get(i));
-                TapeOperation.fifoTapeOperation.offer(new TapeOperation(tape.getTapeViewer(), tape.getCurrentPosition(), tape.getCurrentState(), tape.getState()));
+                //TapeOperation.fifoTapeOperation.offer(new TapeOperation(tape.getTapeViewer(), tape.getCurrentPosition(), tape.getCurrentState(), tape.getState()));
+                refreshTapeView(tape.getTapeViewer(), tape.getCurrentPosition(), tape.getCurrentState(), tape.getState());
                 listTape.add(tape);
             }
             step = step - 1;
             setState(STATE_CLONED);
-            TapeOperation.fifoTapeOperation.offer(new TapeOperation(tapeViewer, currentPosition, currentState, STATE_CLONED));
+            //TapeOperation.fifoTapeOperation.offer(new TapeOperation(tapeViewer, currentPosition, currentState, STATE_CLONED));
+            refreshTapeView(tapeViewer, currentPosition, currentState, STATE_CLONED);
             return new ResponseTape(ResponseTape.ACTION_ADD, listTape);
         }
     }
@@ -159,6 +166,17 @@ public class Tape
             }
         }
         return true;
+    }
+
+    private void refreshTapeView(TapeViewer tapeViewer, int currentPosition, String currentState, int state)
+    {
+        SwingUtilities.invokeLater(() ->
+        {
+            tapeViewer.setCurrentPosition(currentPosition);
+            tapeViewer.setCurrentState(currentState);
+            tapeViewer.setState(state);
+            tapeViewer.refreshGUI();
+        });
     }
 
     public void setCurrentState(String state)
@@ -231,7 +249,14 @@ public class Tape
         if(currentPosition == 0)
         {
             setState(STATE_NOT_CORRECT_POSITION);
-            TapeOperation.fifoTapeOperation.offer(new TapeOperation(tapeViewer, currentPosition, currentState, STATE_NOT_CORRECT_POSITION));
+            //TapeOperation.fifoTapeOperation.offer(new TapeOperation(tapeViewer, currentPosition, currentState, STATE_NOT_CORRECT_POSITION));
+            SwingUtilities.invokeLater(() ->
+            {
+                tapeViewer.setCurrentPosition(currentPosition);
+                tapeViewer.setCurrentState(currentState);
+                tapeViewer.setState(STATE_NOT_CORRECT_POSITION);
+                tapeViewer.refreshGUI();
+            });
             return false;
         }
         currentPosition = currentPosition - 1;

@@ -42,7 +42,7 @@ public class BodyHandler extends JPanel
     {
         this.instructionManager = instructionManager;
         createFirstTape();
-        createTapeLoader();
+        //createTapeLoader();
         createMdtNDThreadHandler();
         createComponents();
         configureContainerHandler();
@@ -74,10 +74,10 @@ public class BodyHandler extends JPanel
         tapeHandler = new TapeHandler(instructionManager, tapeLoaderThread);
         tapeHandler.viewTape(firstTape);
         footHandler = new FootHandler(instructionManager, tapeHandler);
-        tapeLoaderThread.addListener(() ->
+        /*tapeLoaderThread.addListener(() ->
         {
             footHandler.executeAfterTapeLoaderThreadFinish();
-        });
+        });*/
     }
 
     private void configureContainerHandler()
@@ -178,7 +178,7 @@ public class BodyHandler extends JPanel
                     mdtND.pause();
                     footHandler.stopMdtND();
                     createFirstTape();
-                    tapeLoaderThread.exe();
+                    //tapeLoaderThread.exe();
                     tapeHandler.viewTape(firstTape);
                     tapeHandler.setEnabled(true);
                 }
@@ -198,7 +198,8 @@ public class BodyHandler extends JPanel
         mdtND.setListenerAllTapes(tapes ->
         {
             footHandler.actionWhenAllTapes(tapes);
-            tapeLoaderThread.exe();
+            //tapeLoaderThread.exe();
+            footHandler.executeAfterTapeLoaderThreadFinish();
         });
         mdtND.setListenerTapesAdded(tapes ->
         {

@@ -45,12 +45,12 @@ public class TapeHandlerContainer extends JPanel
         containerButtonEditTape.setMaximumSize(new Dimension(40, 40));
         containerButtonEditTape.setLayout(new BorderLayout());
         containerButtonEditTape.setBorder(new EmptyBorder(21, 0, 0, 0));
-        buttonEditTape = Utility.createButton("edit.png"); //https://www.flaticon.com/free-icon/pencil_1828911
+        buttonEditTape = Utility.createButton("edit.png");
         buttonEditTape.addActionListener(e ->
         {
             DialogDefineCharactersTape dialogDefineCharactersTape = new DialogDefineCharactersTape(instructionManager, tape);
             dialogDefineCharactersTape.showDialog();
-            tapeLoaderThread.exe();
+            //tapeLoaderThread.exe();
         });
         containerButtonEditTape.add(buttonEditTape);
 
